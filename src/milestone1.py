@@ -4,61 +4,76 @@ from nbformat.v4 import new_markdown_cell, new_code_cell
 def cells():
     return [
 
-        new_markdown_cell(
-r"""
+        new_markdown_cell(r"""
 # k2pdfopt Google Colab
 
 ## Milestone 1
 
-This notebook compiles **k2pdfopt** from source and verifies that the executable works.
+This notebook downloads the official **k2pdfopt** Linux executable,
+verifies that it works, and prepares the environment for PDF conversion.
+"""),
 
-If this notebook completes successfully, the build environment is ready for PDF conversion.
-"""
-        ),
-
-        new_code_cell(
-r"""
+        new_code_cell(r"""
 print("=" * 60)
-print("Checking Environment")
+print("Environment")
 print("=" * 60)
 
 import platform
-import subprocess
 
 print("Python :", platform.python_version())
 print("Platform :", platform.platform())
+"""),
 
-print("\nCPU")
-subprocess.run(["lscpu"])
+        new_markdown_cell("## Install download utility"),
 
-print("\nMemory")
-subprocess.run(["free", "-h"])
-"""
-        ),
+        new_code_cell(r"""
+!pip -q install gdown
+"""),
 
-        new_markdown_cell(
-"""
-## Install build tools
-"""
-        ),
+        new_markdown_cell("## Download k2pdfopt"),
 
-        new_code_cell(
-r"""
-!apt-get update
-!apt-get install -y \
-    build-essential \
-    cmake \
-    git \
-    wget \
-    curl
-"""
-        ),
+        new_code_cell(r"""
+import os
+import gdown
 
-        new_markdown_cell(
-"""
-## Next step
+FILE_ID = "1WhfSKt52raKtg1y1Y-55pvly-XOmLYLc"
 
-The remaining notebook cells (download source, compile, verify) will be added in the next update.
-"""
-        )
+url = f"https://drive.google.com/uc?id={FILE_ID}"
+
+gdown.download(url, "k2pdfopt", quiet=False)
+
+assert os.path.exists("k2pdfopt"), "Download failed."
+
+print("Download completed.")
+"""),
+
+        new_markdown_cell("## Make executable"),
+
+        new_code_cell(r"""
+!chmod +x k2pdfopt
+
+import os
+
+assert os.access("k2pdfopt", os.X_OK), "Executable permission not set."
+
+print("Executable permission granted.")
+"""),
+
+        new_markdown_cell("## Verify"),
+
+        new_code_cell(r"""
+!./k2pdfopt -?
+"""),
+
+        new_markdown_cell(r"""
+# ✅ Milestone 1 Complete
+
+The k2pdfopt executable has been downloaded and verified.
+
+The next milestone will:
+
+1. Upload a PDF.
+2. Convert it with k2pdfopt.
+3. Download the converted PDF.
+""")
     ]
